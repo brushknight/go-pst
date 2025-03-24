@@ -169,22 +169,22 @@ func (folder *Folder) GetSubFolders() ([]Folder, error) {
 }
 
 // WalkFolderFunc is the type of the function called by WalkFolders when visiting each folder.
-type WalkFolderFunc = func(folder *Folder) error
+type WalkFolderFunc = func(folder *Folder, parentFolder *Folder) error
 
 // WalkFolders walks all folders recursively.
-func (file *File) WalkFolders(walkFolderFunc WalkFolderFunc) error {
+func (file *File) WalkFolders(walkFolderFunc WalkFolderFunc, parent *Folder) error {
 	rootFolder, err := file.GetRootFolder()
 
 	if err != nil {
 		return eris.Wrap(err, "failed to get root folder")
 	}
 
-	return rootFolder.WalkFolders(walkFolderFunc)
+	return rootFolder.WalkFolders(walkFolderFunc, parent)
 }
 
 // WalkFolders recursively walks the sub-folders of this folder.
-func (folder *Folder) WalkFolders(walkFolderFunc WalkFolderFunc) error {
-	if err := walkFolderFunc(folder); err != nil {
+func (folder *Folder) WalkFolders(walkFolderFunc WalkFolderFunc, parent *Folder) error {
+	if err := walkFolderFunc(folder, parent); err != nil {
 		return eris.Wrap(err, "failed during calling walk folder function")
 	}
 
@@ -195,7 +195,7 @@ func (folder *Folder) WalkFolders(walkFolderFunc WalkFolderFunc) error {
 	}
 
 	for _, subFolder := range subFolders {
-		if err := subFolder.WalkFolders(walkFolderFunc); err != nil {
+		if err := subFolder.WalkFolders(walkFolderFunc, folder); err != nil {
 			return eris.Wrap(err, "failed to walk folders")
 		}
 	}

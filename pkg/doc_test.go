@@ -66,7 +66,7 @@ func TestExample(t *testing.T) {
 	}
 
 	// Walk through folders.
-	if err := pstFile.WalkFolders(func(folder *pst.Folder) error {
+	if err := pstFile.WalkFolders(func(folder *pst.Folder, parentFolder *pst.Folder) error {
 		fmt.Printf("Walking folder: %s\n", folder.Name)
 
 		messageIterator, err := folder.GetMessageIterator()
@@ -143,7 +143,7 @@ func TestExample(t *testing.T) {
 		}
 
 		return messageIterator.Err()
-	}); err != nil {
+	}, nil); err != nil {
 		panic(fmt.Sprintf("Failed to walk folders: %+v\n", err))
 	}
 
